@@ -182,7 +182,7 @@ def runGA_with_logging(populationSize, crossoverRate, mutationRate, fitnessLog, 
                 print(i)
             return i, fitnessLog
         pairs = [(selectPair(generation)) for _ in range(populationSize//2)]
-        crossed = [crossover(pair[0], pair[1]) for pair in pairs if random.uniform(0, 1) <= crossoverRate]
+        crossed = [crossover(pair[0], pair[1]) if random.uniform(0, 1) <= crossoverRate else (pair[0], pair[1]) for pair in pairs]
         new_generation = []
         for cross in crossed:
             new_generation.append(mutate(cross[0], mutationRate))
@@ -194,7 +194,7 @@ def runGA_with_logging(populationSize, crossoverRate, mutationRate, fitnessLog, 
     return None, fitnessLog
     
       
-def runGA_alot(populationSize, crossoverRate, mutationRate, runs=50, lines=5):
+def runGA_alot(prefix, populationSize=100, crossoverRate=0.7, mutationRate=0.001, runs=50, lines=5):
     """
     Runs the genetic algorithm multiple times and plots the results.
 
@@ -213,7 +213,11 @@ def runGA_alot(populationSize, crossoverRate, mutationRate, runs=50, lines=5):
     max_generations = -1
     min_generations = float('inf')
 
+    printProgressBar(0, runs, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+    
     for i in range(runs):
+        
         score, averages = runGA_with_logging(populationSize, crossoverRate, mutationRate, [], verbose=False)
         if score is None:
             not_found_count += 1
@@ -224,28 +228,108 @@ def runGA_alot(populationSize, crossoverRate, mutationRate, runs=50, lines=5):
         max_generations = max(max_generations, score)
         min_generations = min(min_generations, score)
         total_generations += score
+        
+        printProgressBar(i + 1, runs, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
 
     if not_found_count == runs:
         print("No valid runs found.")
         return None
 
+
     avg_generations = total_generations / (runs - not_found_count)
-    print(f"Max Generations: {max_generations}, Min Generations: {min_generations}")
-    print(f"Average Generations: {avg_generations}")
+    # print(f"Max Generation: {max_generations}, Min Generation: {min_generations}")
+    # print(f"Average Generation: {avg_generations}")
+
+
+    plt.figure()
 
     random_runs = random.sample(valid_runs, min(lines, len(valid_runs)))
     for i in random_runs:
         score, averages = scores_dict[i]
         plt.plot(range(len(averages)), averages, label=f'Run {i + 1}')
         plt.scatter(score, averages[-1], s=10)
-        plt.text(score + 0.1, averages[-1] + 0.1, f'({score}, {averages[-1]:.2f})', fontsize=12, ha='right', color='red', style='oblique')
+        # plt.text(score + 0.1, averages[-1] + 0.1, f'({score}, {averages[-1]:.2f})', fontsize=12, ha='right', color='red', style='oblique')
 
+
+    plt.gca().text(
+        -0.3, -0.3,                  # (x, y) in axes fraction coords (0–1)
+        f'Avg Generation: {avg_generations:.2f}\nMax Generation: {max_generations}\nMin Generation: {min_generations}\nSuccess Rate: {((runs - not_found_count) / runs) * 100:.2f}%',
+        transform=plt.gca().transAxes,  # <-- use axes coords, not data coords
+        ha='left', va='bottom',
+        clip_on=False,
+        fontsize=10, color='black'
+    )
+    
+    
     plt.xlabel('Generations')
     plt.ylabel('Average Fitness')
     plt.legend()
-    plt.show()
+    title = f"Population: {populationSize}, Crossover Rate: {crossoverRate}, Mutation Rate: {mutationRate}"
+    plt.title(title)
 
-    return avg_generations
+    plt.savefig(f"{prefix}_GA_Pop{populationSize}_Cross{crossoverRate}_Mut{mutationRate}.png", dpi=300, bbox_inches='tight')
+    # plt.show()
+    
+    plt.close()
+
+
+    return (avg_generations, max_generations, min_generations, (runs - not_found_count) / runs * 100)
+
+def runGA_even_more():
+    """
+    Runs the genetic algorithm multiple times and writes the results to a single file.
+
+    :return: None
+    """
+    population_sizes = [20, 50, 100, 200, 500]
+    crossover_rates = [0.0, 0.3, 0.7, 1.0]
+    mutation_rates = [0.0001, 0.0005, 0.001, 0.005, 0.01]
+
+    with open("GA_results.txt", "w") as result_file:
+        result_file.write("Genetic Algorithm Results\n")
+        result_file.write("=" * 50 + "\n")
+
+        for pop in population_sizes:
+            print("Running Population Size:", pop)
+            result_file.write(f"\nRunning Population Size: {pop}\n")
+            avg_gen, max_gen, min_gen, success_rate = runGA_alot("p", pop, 0.7, 0.001, 50, 50)
+            result_file.write(f"Population Size: {pop}, Avg Generations: {avg_gen:.2f}, Max Generations: {max_gen}, Min Generations: {min_gen}, Success Rate: {success_rate:.2f}%\n")
+
+        for cross in crossover_rates:
+            print("Running Crossover Rate:", cross)
+            result_file.write(f"\nRunning Crossover Rate: {cross}\n")
+            avg_gen, max_gen, min_gen, success_rate = runGA_alot("c", 100, cross, 0.001, 50, 50)
+            result_file.write(f"Crossover Rate: {cross}, Avg Generations: {avg_gen:.2f}, Max Generations: {max_gen}, Min Generations: {min_gen}, Success Rate: {success_rate:.2f}%\n")
+
+        for mut in mutation_rates:
+            print("Running Mutation Rate:", mut)
+            result_file.write(f"\nRunning Mutation Rate: {mut}\n")
+            avg_gen, max_gen, min_gen, success_rate = runGA_alot("m", 100, 0.7, mut, 50, 50)
+            result_file.write(f"Mutation Rate: {mut}, Avg Generations: {avg_gen:.2f}, Max Generations: {max_gen}, Min Generations: {min_gen}, Success Rate: {success_rate:.2f}%\n")
+        
+
+
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 if __name__ == '__main__':
     #Testing Code
@@ -260,6 +344,7 @@ if __name__ == '__main__':
 
     # how to use:
     # runGA(populationSize, crossoverRate, mutationRate, logFile="")
-    runGA_alot(100, 0, 0.001, 50, 5)
+    # runGA_alot(100, 0.7, 0.001, 15, 5)
+    runGA_even_more()
 
     # runGA(100, 0.7, 0.001, "run1.txt")

@@ -5,11 +5,31 @@ i.
 
 After doing 50 runs with a population size of 100, single-point crossover rate of 0.7, and a bitwise mutation rate of 0.001, these are my results.
 
-Max Generations: 49
-Min Generations: 6
-Average Generations: 25.49
+Max Generation: 49
+Min Generation: 6
+Average Generation: 25.49
 
+My line plot of average fitness is in this directory, it's called Figure_1.png.
 I notice that they all have a similar shape, especially towards the beginning. They all start off by increasing from a fitness of ~10 very rapidly, but then the rate of growth slows down, and they level off towards the end. Runs that find the goal more quickly don't have as much of a chance to level out, while the ones that take much longer do. I assume that this is because, as you have more generations, improvements are only marginal. All runs except run 41 have more or less the same exact path. The only difference with them is what generation they found the goal at. Some found the goal very quickly, like run 3, which found the goal after only 7 generations, and an average fitness of only 14.34. Run 41 wasn't as lucky, and took much longer, with a much slower rate of increase for its average fitness. I assume that this is because run 41 had some unlucky mutations and crossovers, which slowed its progress.
 
 ii.
 
+When dropping the single-point crossover rate to 0, the algorithm almost always fails. I was able to get one run that found the goal, and that can be seen in Figure_2.png. This took many many tries however, each time running 50 populations through 50 generations. 
+
+The population rarely reaches the goal because individuals can no longer share useful traits. Instead, the algorithm relies solely on random mutation, which makes exploration of the solution space inefficient, as each member of the population is more isolated. While selection still allows slightly better individuals to survive, progress is extremely slow, since improvements cannot be combined. As a result, finding a solution becomes more of a random process than an evolutionary one, and successful runs are rare compared to when crossover is enabled.
+
+iii.
+
+I systematically varied population size, crossover rate, and mutation rate to examine how each parameter affects the time required for the genetic algorithm (GA) to discover the optimal string of all ones. Each experiment consisted of 50 independent runs, and I recorded the average, minimum, and maximum generations to solution, as well as the success rate.
+
+Population size.
+Smaller populations (20–50) performed poorly, with success rates below 50%. A population of 20 succeeded only once in 50 runs (2% success). Performance improved dramatically as population size increased: with 100 individuals, success reached 92% at an average of 25.6 generations, while at 200 and 500 individuals, success was 100% and the average discovery time dropped to 16.8 and 14.4 generations respectively. In addition, the shapes of the fitness-over-time curves became more consistent as population size grew. At higher populations, the curves resembled a near-linear improvement (closer to y = x) instead of a square-root-like curve (y = √x). This means larger populations progress more steadily: they start less explosively, but they also avoid the rapid tapering off seen in smaller populations, leading to more reliable convergence.
+
+Crossover rate.
+With crossover disabled (0.0), the GA essentially failed, with only one successful run out of 50. Low crossover (0.3) achieved a 52% success rate, but at a relatively high average discovery time of 32.4 generations. Increasing crossover to 0.7 and 1.0 significantly improved both reliability and speed: success rates rose to 90–98%, and the average discovery time decreased to 24.5 and 21.2 generations respectively. This confirms the importance of crossover in combining building blocks of good solutions. Runs with higher crossover also showed smoother convergence curves, reflecting more consistent exploitation of good traits across the population.
+
+Mutation rate.
+Mutation was more robust to variation. Across tested rates from 0.0001 to 0.01, success rates stayed high (90–98%), and average generations to solution ranged only from about 24 to 28. The best performance occurred around 0.001 (the default) with 24.4 generations on average. Extremely low mutation (0.0001) slightly slowed convergence, and very high mutation (0.01) also increased average generations, suggesting that too little or too much mutation hinders efficiency. However, the shape of the fitness curves remained broadly similar across mutation settings, with no dramatic structural changes like those seen in the population-size experiments. At mutation rates of 0.001 and 0.0001, the lines of the plot are closer together, which could signify that values in this area create a more uniform output.
+
+Summary.
+Overall, the experiments show that the GA performs best with large population sizes (200–500) and high crossover rates (close to 1.0). Mutation rate matters less within the tested range, though moderate values (around 0.001) are slightly more efficient. The key takeaway is that population size and crossover strongly determine whether the GA reliably finds the optimal solution, while mutation primarily fine-tunes the balance between exploration and stability. The convergence curves reinforce this conclusion: larger populations yield steadier, more linear progress toward the solution, whereas smaller populations show bursty early improvements followed by stagnation.
