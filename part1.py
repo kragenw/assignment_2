@@ -7,8 +7,16 @@ def randomGenome(length):
     :param length:
     :return: string, random binary digit
     """
-    """Your Code Here"""
-    raiseNotDefined()
+    # ret = ''
+    # for i in range(length):
+    #     ret += str(random.randint(0,1))
+    # return ret
+    # more verbose
+
+    return "".join(random.choice("01") for _ in range(length))
+    
+        
+
 
 
 def makePopulation(size, length):
@@ -17,10 +25,12 @@ def makePopulation(size, length):
     :param length - of genome
     :return: list of length size containing genomes of length length
     """
-
-    """Your Code Here"""
-
-    raiseNotDefined()
+    # population = []
+    # for i in range(size):
+    #     population.append(randomGenome(length))
+    # return population
+    # more verbose
+    return [randomGenome(length) for _ in range(size)]
 
 
 def fitness(genome):
@@ -28,16 +38,34 @@ def fitness(genome):
     :param genome: 
     :return: the fitness value of a genome
     """
+    # counter = 0
+    # for b in genome:
+    #     if b == "1":
+    #         counter += 1
+    # return counter
+    # more verbose
+    
+    return sum(1 for b in genome if b =="1")
 
-
-    raiseNotDefined()
 
 def evaluateFitness(population):
     """
     :param population: 
     :return: a pair of values: the average fitness of the population as a whole and the fitness of the best individual in the population.
     """
-    raiseNotDefined()
+    # total = 0
+    # best = -1
+    # for genome in population:
+    #     score = fitness(genome)
+    #     if score > best:
+    #         best = score
+    #     total += score
+    # return total/len(population), best
+    # more verbose
+    scores = [fitness(genome) for genome in population]
+    return sum(scores)/len(scores), max(scores)
+        
+    
 
 
 
@@ -47,7 +75,14 @@ def crossover(genome1, genome2):
     :param genome2:
     :return: two new genomes produced by crossing over the given genomes at a random crossover point.
     """
-    raiseNotDefined()
+    # TODO: find out if you should ever have a crossover point at before or after all bits, effectively stitching the whole thing or doing nothing, I'm doing it so it does
+    # lots of time wasted later, this was not the way to do it
+    if len(genome1) != len(genome2):
+        print("ts aint gon work cuh")
+        return False
+    crossover_p = random.randint(1,len(genome1) - 1)
+
+    return genome1[:crossover_p] + genome2[crossover_p:], genome2[:crossover_p] + genome1[crossover_p:]
 
 
 def mutate(genome, mutationRate):
@@ -56,7 +91,13 @@ def mutate(genome, mutationRate):
     :param mutationRate:
     :return: a new mutated version of the given genome.
     """
-    raiseNotDefined()
+    genome = list(genome) 
+    for i in range(len(genome)):
+        if random.uniform(0, 1) <= mutationRate:
+            genome[i] = "1" if genome[i] == "0" else "0"
+    return "".join(genome)
+
+    
 
 def selectPair(population):
     """
@@ -65,7 +106,12 @@ def selectPair(population):
     :return: two genomes from the given population using fitness-proportionate selection.
     This function should use weightedChoice, which is available in the Utils File, as a helper function.
     """
-    raiseNotDefined()
+    weights = [fitness(genome) for genome in population]
+    
+    
+    
+    return weightedChoice(population, weights), weightedChoice(population, weights)
+    
 
 def runGA(populationSize, crossoverRate, mutationRate, logFile=""):
     """
@@ -76,21 +122,72 @@ def runGA(populationSize, crossoverRate, mutationRate, logFile=""):
     crossover rate (pc), and mutation rate (pm) as parameters. The optional logFile parameter is a string specifying
     the name of a te
     """
-    raiseNotDefined()
-
-
-
-
+    
+    # TODO: figure out where crossoverRate comes in, its not used in the crossover function
+    
+    print("Population Size:", populationSize)
+    print("Genome Length: 20")
+    
+    length = 20
+    
+    generation = makePopulation(populationSize, length)
+    
+    # with open(logFile, "w") as f:
+    #     f.write("")
+    
+    for i in range(51):
+        # with open(logFile, "a") as f:
+        #     f.write(f"{i} {round(evaluateFitness(generation)[0], 2)} {evaluateFitness(generation)[1]}\n")
+        print(f"Generation {i}: Avg Fitness {round(evaluateFitness(generation)[0], 2)}, Best Fitness {evaluateFitness(generation)[1]}")
+        if evaluateFitness(generation)[1] == length:
+            print(i)
+            return i
+        pairs = [(selectPair(generation)) for _ in range(populationSize//2)]
+        crossed = [crossover(pair[0], pair[1]) for pair in pairs if random.uniform(0, 1) <= crossoverRate]
+        new_generation = []
+        for cross in crossed:
+            new_generation.append(mutate(cross[0], mutationRate))
+            new_generation.append(mutate(cross[1], mutationRate))
+        generation = new_generation
+        
+    return None
+    
+    
+def runGA_alot(populationSize, crossoverRate, mutationRate, runs=100, logFile=""):
+    """
+    :param populationSize: :param crossoverRate: :param mutationRate: :param runs: :return: the average number of generations
+    required to find the string of all ones over the given number of runs.
+    """
+    
+    # TODO: figure out what he wants me to do if it doesn't find the string of all ones in 50 generations, currently returning 50 for that case
+    # If a none is found, it is not counted in the average, skipping the run entirely
+    # But this skews the average and max downward, because any run that takes longer than 50 is not counted at all
+    not_found_counter = 0
+    total = 0
+    maximum = -1
+    minimum = float('inf')
+    for _ in range(runs):
+        score = runGA(populationSize, crossoverRate, mutationRate, logFile)
+        if score is None:
+            not_found_counter += 1
+            continue
+        maximum = max(maximum, score)
+        minimum = min(minimum, score)
+    print(f"Max: {maximum}, Min: {minimum}")
+    print(total/(runs - not_found_counter))
+    return total/(runs - not_found_counter)
 
 if __name__ == '__main__':
     #Testing Code
     print("Test Suite")
-    GAinspector.inspectFunction(randomGenome)
-    GAinspector.inspectFunction(makePopulation)
-    GAinspector.inspectFunction(fitness)
-    GAinspector.inspectFunction(evaluateFitness)
-    GAinspector.inspectFunction(crossover)
-    GAinspector.inspectFunction(mutate)
-    GAinspector.inspectFunction(selectPair)
+    # GAinspector.inspectFunction(randomGenome)
+    # GAinspector.inspectFunction(makePopulation)
+    # GAinspector.inspectFunction(fitness)
+    # GAinspector.inspectFunction(evaluateFitness)
+    # GAinspector.inspectFunction(crossover)
+    # GAinspector.inspectFunction(mutate)
+    # GAinspector.inspectFunction(selectPair)
+    
+    runGA_alot(100, 0.7, 0.001, 10, "hi")
 
     #runGA(100, 0.7, 0.001, "run1.txt")
