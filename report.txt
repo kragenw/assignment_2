@@ -1,0 +1,15 @@
+Kragen Wild
+Part 1 b
+
+i.
+
+After doing 50 runs with a population size of 100, single-point crossover rate of 0.7, and a bitwise mutation rate of 0.001, these are my results.
+
+Max Generations: 49
+Min Generations: 6
+Average Generations: 25.49
+
+I notice that they all have a similar shape, especially towards the beginning. They all start off by increasing from a fitness of ~10 very rapidly, but then the rate of growth slows down, and they level off towards the end. Runs that find the goal more quickly don't have as much of a chance to level out, while the ones that take much longer do. I assume that this is because, as you have more generations, improvements are only marginal. All runs except run 41 have more or less the same exact path. The only difference with them is what generation they found the goal at. Some found the goal very quickly, like run 3, which found the goal after only 7 generations, and an average fitness of only 14.34. Run 41 wasn't as lucky, and took much longer, with a much slower rate of increase for its average fitness. I assume that this is because run 41 had some unlucky mutations and crossovers, which slowed its progress.
+
+ii.
+
