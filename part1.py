@@ -125,7 +125,7 @@ def runGA(populationSize, crossoverRate, mutationRate, logFile=""):
     the name of a te
     """
     
-    # TODO: figure out where crossoverRate comes in, its not used in the crossover function
+    # TODO: make it so it doesn't call evalueateFitness twice per generation
     
     print("Population Size:", populationSize)
     print("Genome Length: 20")
@@ -343,8 +343,6 @@ if __name__ == '__main__':
     # GAinspector.inspectFunction(selectPair)
 
     # how to use:
-    # runGA(populationSize, crossoverRate, mutationRate, logFile="")
-    # runGA_alot(100, 0.7, 0.001, 15, 5)
-    runGA_even_more()
-
-    # runGA(100, 0.7, 0.001, "run1.txt")
+    # runGA(100, 0.7, 0.001, logFile="run1.txt") # runs the GA once with population size 100, crossover rate 0.7, mutation rate 0.001, and logs to run1.txt
+    # runGA_alot(100, 0.7, 0.001, 50, 5) # runs the GA 50 times with population size 100, crossover rate 0.7, mutation rate 0.001, and plots 5 of the runs
+    runGA_even_more() # runs the GA multiple times with different parameters and logs to GA_results.txt
