@@ -1,7 +1,7 @@
 import GAinspector
 import numpy as np
 from utils import *
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 def randomGenome(length):
@@ -334,15 +334,15 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 if __name__ == '__main__':
     #Testing Code
     # print("Test Suite")
-    # GAinspector.inspectFunction(randomGenome)
-    # GAinspector.inspectFunction(makePopulation)
-    # GAinspector.inspectFunction(fitness)
-    # GAinspector.inspectFunction(evaluateFitness)
-    # GAinspector.inspectFunction(crossover)
-    # GAinspector.inspectFunction(mutate)
-    # GAinspector.inspectFunction(selectPair)
+    GAinspector.inspectFunction(randomGenome)
+    GAinspector.inspectFunction(makePopulation)
+    GAinspector.inspectFunction(fitness)
+    GAinspector.inspectFunction(evaluateFitness)
+    GAinspector.inspectFunction(crossover)
+    GAinspector.inspectFunction(mutate)
+    GAinspector.inspectFunction(selectPair)
 
     # how to use:
     # runGA(100, 0.7, 0.001, logFile="run1.txt") # runs the GA once with population size 100, crossover rate 0.7, mutation rate 0.001, and logs to run1.txt
     # runGA_alot(100, 0.7, 0.001, 50, 5) # runs the GA 50 times with population size 100, crossover rate 0.7, mutation rate 0.001, and plots 5 of the runs
-    runGA_even_more() # runs the GA multiple times with different parameters and logs to GA_results.txt
+    # runGA_even_more() # runs the GA multiple times with different parameters and logs to GA_results.txt
