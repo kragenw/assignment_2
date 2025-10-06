@@ -196,15 +196,14 @@ def runGA(populationSize, crossoverRate, mutationRate, logFile=""):
     the name of a te
     """
     
-    print("Population Size:", populationSize)
-    print("Genome Length: 243")
-    
+    print(f"Population Size: {populationSize}\n")
+        
     generation = makePopulation(populationSize, 243)
     
     with open(logFile, "w") as f:
         f.write("PopulationSize: {0}, CrossoverRate: {1}, MutationRate: {2}\n".format(populationSize, crossoverRate, mutationRate))
-    printProgressBar(0, 300, prefix = 'Progress:', suffix = 'Complete', length = 50)
-    for i in range(301):
+    printProgressBar(0, 301, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    for i in range(1001):
         score, best, scores = evaluateFitness(generation)
         # with open(logFile, "a") as f:
         #     f.write(f"{i} {round(score, 2)} {best}\n")
@@ -230,7 +229,7 @@ def runGA(populationSize, crossoverRate, mutationRate, logFile=""):
             new_generation.append(mutate(cross[1], mutationRate))
         generation = new_generation
 
-        printProgressBar(i + 1, 300, prefix = 'Progress:', suffix = 'Complete', length = 50)
+        printProgressBar(i + 1, 301, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
     return False
 
@@ -259,18 +258,39 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total: 
         print()
+        
+        
+def testGA():
+    """
+    Runs the genetic algorithm multiple times and writes the results to a single file.
+
+    :return: None
+    """
+    
+    # this told me that a crossover of 1, mutation of 0.01, and population of 1000 was best
+    
+    population_sizes = [100, 200, 500, 1000]
+    crossover_rates = [0.7, 1.0]
+    mutation_rates = [0.0001, 0.0005, 0.001, 0.005, 0.01]
+
+    for pop in population_sizes:
+        log_file = f"GA_results_population_{pop}.txt"
+        runGA(pop, 0.7, 0.001, logFile=log_file)
+    for cross in crossover_rates:
+        log_file = f"GA_results_crossover_{cross}.txt"
+        runGA(100, cross, 0.001, logFile=log_file)
+
+    for mut in mutation_rates:
+        log_file = f"GA_results_mutation_{mut}.txt"
+        runGA(100, 0.7, mut, logFile=log_file)
+
 
 if __name__ == '__main__':
     
- 
+    # testGA()
     
-    runGA(500, 1, 0.001, logFile="Beating400.txt")
-        
-    rw.demo("653351054251355133354134012151356253250652660151650546056055504251051003135042404051005253355622632302301040305600104356252065052155064350141256543123422010051262252663251254250256153315313150013254154652253150554255610526433446644442050426642")
-        
-    # f = fitness("653351054251355133354134012151356253250652660151650546056055504251051003135042404051005253355622632302301040305600104356252065052155064350141256543123422010051262252663251254250256153315313150013254154652253150554255610526433446644442050426642")
-    # print("Fitness for Strategy : {0}".format(f))
-    
+    runGA(1000, 1, 0.01, logFile="HyperOptimized.txt")
+            
     # test_FitnessFunction()
 
     #runGA(100, 1.0, 0.05)

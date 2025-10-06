@@ -38,7 +38,7 @@ Overall, the experiments show that the GA performs best with large population si
 
 Part 2 b
 
-After using the recommended settings:
+I started with these settings:
 
 Population size: 100
 Crossover rate: 1.0
@@ -68,4 +68,14 @@ Number of generations: 3000
 
 I came back before the function finished, but I could already see that I was getting scores right around 400. The results for this file are in 3000_high_mut.txt. What’s cool, though, is that my best evolved strategy actually beat the hand-coded strategyM (which has an average fitness around 360). So even though a lot of runs stalled out, the GA is capable of discovering strategies that outperform a carefully designed one, which is kind of the whole point. However, I noticed that while the function ran for about 1600 generations, a score above 400 was reached at generation 640, and again, the GA plateaued for the remaining generations. I'd be curious to see if this is just another local maxima, and what it would take to break past it. In the end, the best genome I found had a score of 413, and it occurred at generation 870.
 
-In the end, the settings that worked best for me were larger populations, fairly high mutation rates, and lots of generations. Those gave the best shot at escaping local maxima and finding strong strategies. I think if I kept increasing the population and the number of generations, I’d still see some improvement, but the trade-off is the huge runtime cost. A smarter approach might be to use something like adaptive mutation that kicks in when progress stalls. That could help push past those frustrating plateaus without blowing up the runtime even more.
+After this, I tried to see how high of a score I could get in just 300 generations. To see which settings were the best, I tried a similar approach as to part 1, where I systematically tested different mutation and crossover rates, as well as different populations. 
+
+The base settings were population of 100, crossover of 0.7, and mutation of 0.001.
+A crossover of 1 is better than 0.7, resulting in a lower average (14.2 vs 6.44), but higher max score (23.0 vs 37.6)
+A mutation rate of 0.01 is the best, with an average of 31.28 and max score of 65.2, compared to the second best rate of 0.005, with an average of 19.63 and a max score of 50.2.
+Higher population is better, 1000 had my best average of 245.33 and max of 306.0. This isn't always the case, a population of 500 did very poorly, even worse than a population of 100.
+The full results are in the folder robby_testing. 
+
+From this, I found the optimal settings is a crossover rate of 1, mutation rate of 0.01, and a population of 1000. So, I tried a run with all of these settings together, and was able to get a high score of 306.0. The full results are in the file Optimized.txt.
+
+In the end, the settings that worked best for me were larger populations (1000), fairly high mutation rates (0.01), and lots of generations. Those gave the best shot at escaping local maxima and finding strong strategies. I think if I kept increasing the population and the number of generations, I’d still see some improvement, but the trade-off is the huge runtime cost. A smarter approach might be to use something like adaptive mutation that kicks in when progress stalls. That could help push past those frustrating plateaus without blowing up the runtime even more.
